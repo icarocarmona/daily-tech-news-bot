@@ -1,0 +1,8 @@
+langchain
+langgraph
+python-dotenv
+openai
+feedparser
+requests
+langchain-community
+langchain-openai
