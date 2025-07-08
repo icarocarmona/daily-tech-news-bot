@@ -38,25 +38,27 @@ daily-tech-news-bot/
 ## 🛠️ Instalação e uso
 
 1. Clone o repositório:
-   ```bash
-   git clone https://github.com/seu-usuario/daily-tech-news-bot.git
-   cd daily-tech-news-bot
-   ```
+```bash
+git clone https://github.com/seu-usuario/daily-tech-news-bot.git
+cd daily-tech-news-bot
+```
    
 2.	Crie o ambiente e instale dependências:
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   ```
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
 3.	Configure seu .env baseado no .env.example:
-   ```
-   OPENAI_API_KEY=sk-...
-   TELEGRAM_BOT_TOKEN=...
-   TELEGRAM_CHAT_ID=...
-   ```
+```bash
+OPENAI_API_KEY=sk-...
+TELEGRAM_BOT_TOKEN=...
+TELEGRAM_CHAT_ID=...
+```
+
 4.	Execute manualmente:
-   ```sh
-   python -m agents.summarizer
-   ```
+```sh
+python -m agents.summarizer
+```
 
