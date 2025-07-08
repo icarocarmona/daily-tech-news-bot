@@ -14,6 +14,8 @@ Um bot automatizado que coleta diariamente notícias do mundo da tecnologia, fil
 ---
 
 ## 📦 Estrutura do projeto
+
+```
 daily-tech-news-bot/
 ├── agents/
 │   └── summarizer.py          # Pipeline principal com LangGraph
@@ -22,7 +24,7 @@ daily-tech-news-bot/
 │   └── telegram.py            # Envio de mensagens via Telegram
 ├── .env.example               # Variáveis de ambiente (modelo)
 ├── requirements.txt           # Dependências do projeto
-
+```
 ---
 
 ## ✅ Pré-requisitos
@@ -43,18 +45,18 @@ daily-tech-news-bot/
    
 2.	Crie o ambiente e instale dependências:
    ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
 3.	Configure seu .env baseado no .env.example:
-```
-OPENAI_API_KEY=sk-...
-TELEGRAM_BOT_TOKEN=...
-TELEGRAM_CHAT_ID=...
-```
+   ```
+   OPENAI_API_KEY=sk-...
+   TELEGRAM_BOT_TOKEN=...
+   TELEGRAM_CHAT_ID=...
+   ```
 4.	Execute manualmente:
-```sh
-python -m agents.summarizer
-```
+   ```sh
+   python -m agents.summarizer
+   ```
 
