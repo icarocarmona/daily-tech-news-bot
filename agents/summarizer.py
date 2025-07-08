@@ -3,6 +3,9 @@ from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from services.fetch_news import fetch_latest_news
 from services.telegram import send_message
@@ -18,7 +21,7 @@ class AppState(TypedDict):
 
 
 llm = ChatOpenAI(model="gpt-4o", temperature=0.3)
-prompt = ChatPromptTemplate.from_messages(
+resumo_prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
@@ -30,38 +33,40 @@ prompt = ChatPromptTemplate.from_messages(
         ),
     ]
 )
+filtro_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "Você é um filtro inteligente que analisa o título de uma notícia e decide se ela é relevante para alguém interessado em dados, IA, arquitetura de software ou política/negócios que impactam tecnologia.",
+        ),
+        (
+            "human",
+            "Título: {titulo}\nA notícia é relevante? Responda apenas com 'SIM' ou 'NAO'",
+        ),
+    ]
+)
+
+
+filtro_llm = filtro_prompt | llm
+
+resumo_llm = resumo_prompt | llm
 
 
 def filter_news_by_title(state):
-    chain = (
-        ChatPromptTemplate.from_messages(
-            [
-                (
-                    "system",
-                    "Você é um filtro inteligente que analisa o título de uma notícia e decide se ela é relevante para alguém interessado em dados, IA, arquitetura de software ou política/negócios que impactam tecnologia.",
-                ),
-                (
-                    "human",
-                    "Título: {titulo}\nA notícia é relevante? Responda apenas com 'SIM' ou 'NAO'",
-                ),
-            ]
-        )
-        | llm
-    )
-
     filtradas = []
     for noticia in state["noticias"]:
-        resposta = chain.invoke({"titulo": noticia["title"]})
+        resposta = filtro_llm.invoke({"titulo": noticia["title"]})
         if isinstance(resposta.content, str) and "SIM" == resposta.content:
             filtradas.append(noticia)
+            print(f"Noticia:  \n{noticia}")
+
     return {"noticias": filtradas, "resumos": [], "status": "filtrado"}
 
 
 def summarize_news(state):
     summaries = []
     for noticia in state["noticias"]:
-        chain = prompt | llm
-        res = chain.invoke({"noticia": noticia["content"]})
+        res = resumo_llm.invoke({"noticia": noticia["content"]})
         summaries.append(
             {"title": noticia["title"], "link": noticia["link"], "resumo": res.content}
         )
@@ -78,20 +83,34 @@ def format_and_send(state):
 
 
 # Construindo o grafo
-workflow = StateGraph[AppState](state_schema=AppState)
-workflow.add_node("filtrar", filter_news_by_title)
-workflow.add_node("resumir", summarize_news)
-workflow.add_node("enviar", format_and_send)
-workflow.set_entry_point("filtrar")
-workflow.add_edge("filtrar", "resumir")
-workflow.add_edge("resumir", "enviar")
-workflow.set_finish_point("enviar")
+# workflow = StateGraph[AppState](state_schema=AppState)
+# workflow.add_node("filtrar", filter_news_by_title)
+# workflow.add_node("resumir", summarize_news)
+# workflow.add_node("enviar", format_and_send)
+# workflow.set_entry_point("filtrar")
+# workflow.add_edge("filtrar", "resumir")
+# workflow.add_edge("resumir", "enviar")
+# workflow.set_finish_point("enviar")
+
+
+def process_noticia(noticia: dict):
+    resposta = filtro_llm.invoke({"titulo": noticia["title"]})
+    if "SIM" not in resposta.content:
+        return
+
+    resposta_resumo = resumo_llm.invoke({"noticia": noticia["title"]})
+    resumo = resposta_resumo.content
+
+    msg = f"✨ *{noticia['title']}*\n{resumo}\n[Leia mais]({noticia['link']})"
+    send_message(msg)
 
 
 def run():
     noticias = fetch_latest_news()
-    graph = workflow.compile()
-    graph.invoke({"noticias": noticias, "resumos": [], "status": ""})
+    for noticia in noticias:
+        process_noticia(noticia)
+    # graph = workflow.compile()
+    # graph.invoke({"noticias": noticias, "resumos": [], "status": ""})
 
 
 if __name__ == "__main__":
