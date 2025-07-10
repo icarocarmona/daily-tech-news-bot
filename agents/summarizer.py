@@ -25,11 +25,14 @@ resumo_prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "Você é um assistente que resume notícias técnicas da área de dados, Tech, ChatGPT ,IA ou arquitetura de software.",
+            """Você é um assistente conciso e direto que resume notícias técnicas em português sobre dados, Tech, ChatGPT, IA ou arquitetura de software. Apresente o resumo principal de imediato. 
+            Evite iniciar o reumo com ['A notícia destaca', 'A notícia aborda']
+            Inicie direto com o resumo sem enrolação.
+            """,
         ),
         (
             "human",
-            "Resuma a seguinte notícia em no máximo 5 linhas, com foco no ponto principal e linguagem técnica direta: {noticia}",
+            "Resuma a seguinte notícia em no máximo 5 linhas, focando no ponto principal e utilizando linguagem técnica direta, sem introduções: {noticia}",
         ),
     ]
 )
