@@ -101,6 +101,8 @@ def process_noticia(noticia: dict):
     if "SIM" not in resposta.content:
         return
 
+    print(f"Titulo: {noticia["title"]} \n Site: {noticia["link"]} \n")
+
     resposta_resumo = resumo_llm.invoke({"noticia": noticia["title"]})
     resumo = resposta_resumo.content
 
