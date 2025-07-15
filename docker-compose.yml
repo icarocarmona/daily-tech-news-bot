@@ -1,0 +1,14 @@
+services:
+  agente-api:
+    build: .
+    env_file:
+      - .env
+    container_name: agente-api
+    ports:
+      - "8000:8000"
+    restart: always
+
+networks:
+  default:
+    name: app-network
+    external: true

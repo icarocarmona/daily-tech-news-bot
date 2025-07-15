@@ -6,3 +6,5 @@ feedparser
 requests
 langchain-community
 langchain-openai
+fastapi
+uvicorn[standard]

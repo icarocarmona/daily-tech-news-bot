@@ -110,13 +110,15 @@ def process_noticia(noticia: dict):
     send_message(msg)
 
 
-def run():
+def run_agent():
     noticias = fetch_latest_news()
     for noticia in noticias:
         process_noticia(noticia)
     # graph = workflow.compile()
     # graph.invoke({"noticias": noticias, "resumos": [], "status": ""})
 
+    return {"status": "ok", "message": "Notícias enviadas para o Telegram com sucesso."}
+
 
 if __name__ == "__main__":
-    run()
+    run_agent()
