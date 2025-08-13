@@ -20,7 +20,7 @@ class AppState(TypedDict):
     status: str
 
 
-llm = ChatOpenAI(model="gpt-4o", temperature=0.3)
+llm = ChatOpenAI(model="gpt-5-mini", temperature=0.3)
 resumo_prompt = ChatPromptTemplate.from_messages(
     [
         (
